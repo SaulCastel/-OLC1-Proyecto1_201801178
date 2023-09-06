@@ -1,0 +1,143 @@
+package parsers.statpy;
+import java_cup.runtime.*;
+import java.util.HashMap;
+
+parser code
+{:
+    public void syntax_error(Symbol s){
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+                " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+                (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+                " no reconocido."); 
+    }
+:}
+
+terminal LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON;
+terminal STRING_LITERAL, INTEGER_LITERAL, DOUBLE_LITERAL, CHAR_LITERAL;
+terminal STRING, INTEGER, DOUBLE, CHAR, BOOL;
+terminal TRUE, FALSE, AND, OR, NOT, ASSIGN, ID;
+terminal GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL;
+terminal MINUS, PRINT;
+
+non terminal document, expr, binary_expr, unary_expr;
+non terminal expr_literal, arithmetic_expr, relational_expr;
+non terminal stmts, stmt, variable_stmt, print_stmt, type;
+
+precedence left GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, EQUAL, NOT_EQUAL;
+precedence left AND, OR;
+precedence left NOT;
+precedence left ADD, SUB;
+precedence left TIMES, DIV;
+precedence left MINUS;
+
+document ::= stmts;
+
+stmts
+::= stmts stmt
+    |
+    stmt;
+
+stmt
+::= variable_stmt
+    |
+    print_stmt;
+
+variable_stmt ::= type ID ASSIGN expr SEMICOLON;
+
+print_stmt
+::= PRINT LPAREN expr:e RPAREN SEMICOLON
+    {: System.out.println(e.toString()); :};
+
+type
+::= INTEGER:v
+    {: RESULT = v; :}
+    |
+    DOUBLE:v
+    {: RESULT = v; :}
+    |
+    STRING:v
+    {: RESULT = v; :}
+    |
+    CHAR:v
+    {: RESULT = v; :}
+    |
+    BOOL:v
+    {: RESULT = v; :};
+
+expr
+::= binary_expr:v
+    {: RESULT = v; :}
+    |
+    unary_expr:v
+    {: RESULT = v; :}
+    |
+    LPAREN expr:v RPAREN
+    {: RESULT = v; :}
+    |
+    expr_literal:v
+    {: RESULT = v; :};
+
+binary_expr
+::= arithmetic_expr:v
+    {: RESULT = v; :}
+    |
+    relational_expr:v
+    {: RESULT = v; :}
+    |
+    expr AND expr
+    |
+    expr OR expr;
+
+unary_expr
+::= NOT expr
+    |
+    SUB expr %prec MINUS;
+
+arithmetic_expr
+::= expr:e1 ADD expr:e2
+    {: RESULT = Double.parseDouble((String)e1) + Double.parseDouble((String)e2); :}
+    |
+    expr:e1 SUB expr:e2
+    {: RESULT = Double.parseDouble((String)e1) - Double.parseDouble((String)e2); :}
+    |
+    expr:e1 TIMES expr:e2
+    {: RESULT = Double.parseDouble((String)e1) * Double.parseDouble((String)e2); :}
+    |
+    expr:e1 DIV expr:e2
+    {: RESULT = Double.parseDouble((String)e1) / Double.parseDouble((String)e2); :};
+
+relational_expr
+::= expr GREATER expr
+    |
+    expr LESS expr
+    |
+    expr GREATER_EQUAL expr
+    |
+    expr LESS_EQUAL expr
+    |
+    expr EQUAL expr
+    |
+    expr NOT_EQUAL expr;
+
+expr_literal
+::= STRING_LITERAL:v
+    {: RESULT = v; :}
+    |
+    INTEGER_LITERAL:v
+    {: RESULT = v; :}
+    |
+    CHAR_LITERAL:v
+    {: RESULT = v; :}
+    |
+    DOUBLE_LITERAL:v
+    {: RESULT = v; :}
+    |
+    TRUE:v
+    {: RESULT = v; :}
+    |
+    FALSE:v
+    {: RESULT = v; :};
