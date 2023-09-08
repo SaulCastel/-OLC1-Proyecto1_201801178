@@ -16,16 +16,27 @@ parser code
     }
 :}
 
-terminal LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON;
+terminal LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON, COMMA;
 terminal STRING_LITERAL, INTEGER_LITERAL, DOUBLE_LITERAL, CHAR_LITERAL;
 terminal STRING, INTEGER, DOUBLE, CHAR, BOOL;
 terminal TRUE, FALSE, AND, OR, NOT, ASSIGN, ID;
 terminal GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL;
-terminal MINUS, PRINT;
+terminal MINUS, PRINT, VOID, MAIN, LBRACKET, RBRACKET;
+terminal FOR, INC, WHILE, DO, SWITCH, CASE, DEFAULT, COLON, BREAK;
+terminal IF, ELSE;
+terminal SQR_BRACKETS, EJEX, VALORES, TITULO, TITULOX, TITULOY;
+terminal DEFINIR_GLOBALES, GRAFICA_BARRAS, GRAFICA_PIE;
+terminal DOLLAR, NEW_VALOR;
 
 non terminal document, expr, binary_expr, unary_expr;
 non terminal expr_literal, arithmetic_expr, relational_expr;
 non terminal stmts, stmt, variable_stmt, print_stmt, type;
+non terminal for_stmt, while_stmt, do_while_stmt, switch_stmt;
+non terminal cases, case, default_case;
+non terminal if_stmt, else_stmt, elif_stmt, continue_if;
+non terminal define_global_vars, bar_graph, pie_graph;
+non terminal bar_graph_body, pie_graph_body, list;
+non terminal json_value;
 
 precedence left GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, EQUAL, NOT_EQUAL;
 precedence left AND, OR;
@@ -34,7 +45,7 @@ precedence left ADD, SUB;
 precedence left TIMES, DIV;
 precedence left MINUS;
 
-document ::= stmts;
+document ::= VOID MAIN LPAREN RPAREN LBRACKET stmts RBRACKET;
 
 stmts
 ::= stmts stmt
@@ -42,15 +53,107 @@ stmts
     stmt;
 
 stmt
-::= variable_stmt
+::= variable_stmt SEMICOLON
     |
-    print_stmt;
+    print_stmt SEMICOLON
+    |
+    define_global_vars
+    |
+    bar_graph
+    |
+    pie_graph
+    |
+    if_stmt
+    |
+    for_stmt
+    |
+    while_stmt
+    |
+    do_while_stmt SEMICOLON
+    |
+    switch_stmt;
 
-variable_stmt ::= type ID ASSIGN expr SEMICOLON;
+define_global_vars
+::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET stmts RBRACKET;
+
+bar_graph
+::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET bar_graph_body RBRACKET;
+
+bar_graph_body
+::= STRING TITULO ASSIGN expr SEMICOLON
+    |
+    STRING TITULOX ASSIGN expr SEMICOLON
+    |
+    STRING TITULOY ASSIGN expr SEMICOLON
+    |
+    STRING SQR_BRACKETS EJEX ASSIGN list SEMICOLON
+    |
+    STRING SQR_BRACKETS VALORES ASSIGN list SEMICOLON;
+
+pie_graph
+::= VOID GRAFICA_PIE LPAREN RPAREN LBRACKET pie_graph_body RBRACKET;
+
+pie_graph_body
+::= STRING TITULO ASSIGN expr SEMICOLON
+    |
+    STRING SQR_BRACKETS EJEX ASSIGN list SEMICOLON
+    |
+    STRING SQR_BRACKETS VALORES ASSIGN list SEMICOLON;
+
+list
+::= LBRACKET list expr RBRACKET
+    |
+    expr COMMA;
+
+variable_stmt ::= type ID ASSIGN expr;
 
 print_stmt
-::= PRINT LPAREN expr:e RPAREN SEMICOLON
-    {: System.out.println(e.toString()); :};
+::= PRINT LPAREN expr:e RPAREN;
+
+if_stmt
+::= IF LPAREN expr RPAREN LBRACKET stmts RBRACKET continue_if else_stmt
+    |
+    IF LPAREN expr RPAREN LBRACKET stmts RBRACKET continue_if
+    |
+    IF LPAREN expr RPAREN LBRACKET stmts RBRACKET else_stmt
+    |
+    IF LPAREN expr RPAREN LBRACKET stmts RBRACKET;
+
+continue_if
+::= continue_if elif_stmt
+    |
+    elif_stmt;
+
+elif_stmt
+::= ELSE IF LPAREN expr RPAREN LBRACKET stmts RBRACKET;
+
+else_stmt
+::= ELSE LBRACKET stmts RBRACKET;
+
+for_stmt
+::= FOR LPAREN variable_stmt SEMICOLON expr SEMICOLON ID INC RPAREN LBRACKET stmts RBRACKET;
+
+while_stmt
+::= WHILE LPAREN expr RPAREN LBRACKET stmts RBRACKET;
+
+do_while_stmt
+::= DO LBRACKET stmts RBRACKET WHILE LPAREN expr RPAREN;
+
+switch_stmt
+::= SWITCH LPAREN expr RPAREN LBRACKET cases default_case RBRACKET;
+
+cases
+::= cases case
+    |
+    case;
+
+case
+::= CASE expr_literal COLON stmts BREAK SEMICOLON
+    |
+    CASE expr_literal COLON stmts;
+
+default_case
+::= DEFAULT COLON stmts;
 
 type
 ::= INTEGER:v
@@ -63,6 +166,9 @@ type
     {: RESULT = v; :}
     |
     CHAR:v
+    {: RESULT = v; :}
+    |
+    VOID:v
     {: RESULT = v; :}
     |
     BOOL:v
@@ -79,7 +185,16 @@ expr
     {: RESULT = v; :}
     |
     expr_literal:v
+    {: RESULT = v; :}
+    |
+    ID:v
+    {: RESULT = v; :}
+    |
+    json_value:v
     {: RESULT = v; :};
+
+json_value
+::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL COMMA STRING_LITERAL RBRACKET;
 
 binary_expr
 ::= arithmetic_expr:v
@@ -88,40 +203,36 @@ binary_expr
     relational_expr:v
     {: RESULT = v; :}
     |
-    expr AND expr
+    expr:e1 AND expr:e2
     |
-    expr OR expr;
+    expr:e1 OR expr:e2;
 
 unary_expr
-::= NOT expr
+::= NOT expr:e
     |
-    SUB expr %prec MINUS;
+    SUB expr:e %prec MINUS;
 
 arithmetic_expr
 ::= expr:e1 ADD expr:e2
-    {: RESULT = Double.parseDouble((String)e1) + Double.parseDouble((String)e2); :}
     |
     expr:e1 SUB expr:e2
-    {: RESULT = Double.parseDouble((String)e1) - Double.parseDouble((String)e2); :}
     |
     expr:e1 TIMES expr:e2
-    {: RESULT = Double.parseDouble((String)e1) * Double.parseDouble((String)e2); :}
     |
-    expr:e1 DIV expr:e2
-    {: RESULT = Double.parseDouble((String)e1) / Double.parseDouble((String)e2); :};
+    expr:e1 DIV expr:e2;
 
 relational_expr
-::= expr GREATER expr
+::= expr:e1 GREATER expr:e2
     |
-    expr LESS expr
+    expr:e1 LESS expr:e2
     |
-    expr GREATER_EQUAL expr
+    expr:e1 GREATER_EQUAL expr:e2
     |
-    expr LESS_EQUAL expr
+    expr:e1 LESS_EQUAL expr:e2
     |
-    expr EQUAL expr
+    expr:e1 EQUAL expr:e2
     |
-    expr NOT_EQUAL expr;
+    expr:e1 NOT_EQUAL expr:e2;
 
 expr_literal
 ::= STRING_LITERAL:v

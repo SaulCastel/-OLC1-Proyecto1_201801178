@@ -1,7 +1,5 @@
 package main;
 
-import parsers.json.*;
-import parsers.statpy.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 

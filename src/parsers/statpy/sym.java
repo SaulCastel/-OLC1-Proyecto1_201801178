@@ -8,39 +8,66 @@ package parsers.statpy;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int TIMES = 7;
-  public static final int AND = 20;
-  public static final int SEMICOLON = 8;
-  public static final int LESS_EQUAL = 28;
-  public static final int OR = 21;
-  public static final int RPAREN = 3;
-  public static final int EQUAL = 29;
-  public static final int CHAR = 16;
-  public static final int NOT = 22;
-  public static final int NOT_EQUAL = 30;
-  public static final int GREATER_EQUAL = 27;
-  public static final int GREATER = 25;
-  public static final int TRUE = 18;
+  public static final int STRING_LITERAL = 10;
+  public static final int LBRACKET = 36;
+  public static final int CHAR = 17;
+  public static final int CHAR_LITERAL = 13;
+  public static final int DEFINIR_GLOBALES = 55;
+  public static final int CASE = 43;
+  public static final int NOT_EQUAL = 31;
+  public static final int DOUBLE = 16;
+  public static final int INTEGER = 15;
   public static final int LPAREN = 2;
-  public static final int ID = 24;
-  public static final int SUB = 5;
-  public static final int STRING_LITERAL = 9;
-  public static final int STRING = 13;
-  public static final int EOF = 0;
+  public static final int GREATER = 26;
+  public static final int GRAFICA_BARRAS = 56;
+  public static final int FOR = 38;
+  public static final int LESS = 27;
+  public static final int MINUS = 32;
+  public static final int TITULOY = 54;
+  public static final int TITULOX = 53;
+  public static final int RPAREN = 3;
+  public static final int NOT = 23;
+  public static final int SEMICOLON = 8;
+  public static final int AND = 21;
+  public static final int EJEX = 50;
+  public static final int OR = 22;
+  public static final int GRAFICA_PIE = 57;
+  public static final int BOOL = 18;
+  public static final int COMMA = 9;
+  public static final int TITULO = 52;
+  public static final int INC = 39;
   public static final int DIV = 6;
-  public static final int ADD = 4;
-  public static final int CHAR_LITERAL = 12;
-  public static final int MINUS = 31;
-  public static final int FALSE = 19;
-  public static final int PRINT = 32;
+  public static final int LESS_EQUAL = 29;
+  public static final int IF = 47;
+  public static final int MAIN = 35;
+  public static final int ASSIGN = 24;
+  public static final int ID = 25;
+  public static final int EOF = 0;
+  public static final int VALORES = 51;
+  public static final int RBRACKET = 37;
+  public static final int EQUAL = 30;
+  public static final int TRUE = 19;
+  public static final int GREATER_EQUAL = 28;
   public static final int error = 1;
-  public static final int ASSIGN = 23;
-  public static final int INTEGER_LITERAL = 10;
-  public static final int BOOL = 17;
-  public static final int INTEGER = 14;
-  public static final int LESS = 26;
-  public static final int DOUBLE = 15;
-  public static final int DOUBLE_LITERAL = 11;
+  public static final int ADD = 4;
+  public static final int NEW_VALOR = 59;
+  public static final int BREAK = 46;
+  public static final int VOID = 34;
+  public static final int SWITCH = 42;
+  public static final int TIMES = 7;
+  public static final int SQR_BRACKETS = 49;
+  public static final int COLON = 45;
+  public static final int ELSE = 48;
+  public static final int WHILE = 40;
+  public static final int DOLLAR = 58;
+  public static final int DEFAULT = 44;
+  public static final int STRING = 14;
+  public static final int DOUBLE_LITERAL = 12;
+  public static final int FALSE = 20;
+  public static final int SUB = 5;
+  public static final int DO = 41;
+  public static final int PRINT = 33;
+  public static final int INTEGER_LITERAL = 11;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -51,6 +78,7 @@ public class sym {
   "DIV",
   "TIMES",
   "SEMICOLON",
+  "COMMA",
   "STRING_LITERAL",
   "INTEGER_LITERAL",
   "DOUBLE_LITERAL",
@@ -74,7 +102,33 @@ public class sym {
   "EQUAL",
   "NOT_EQUAL",
   "MINUS",
-  "PRINT"
+  "PRINT",
+  "VOID",
+  "MAIN",
+  "LBRACKET",
+  "RBRACKET",
+  "FOR",
+  "INC",
+  "WHILE",
+  "DO",
+  "SWITCH",
+  "CASE",
+  "DEFAULT",
+  "COLON",
+  "BREAK",
+  "IF",
+  "ELSE",
+  "SQR_BRACKETS",
+  "EJEX",
+  "VALORES",
+  "TITULO",
+  "TITULOX",
+  "TITULOY",
+  "DEFINIR_GLOBALES",
+  "GRAFICA_BARRAS",
+  "GRAFICA_PIE",
+  "DOLLAR",
+  "NEW_VALOR"
   };
 }
 
