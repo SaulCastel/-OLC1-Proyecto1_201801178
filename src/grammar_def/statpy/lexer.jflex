@@ -53,12 +53,12 @@ ID = [a-z][a-z0-9_]*
     "DefinirGlobales"       { return symbol(yytext(), sym.DEFINIR_GLOBALES); }
     "GraficaBarras"         { return symbol(yytext(), sym.GRAFICA_BARRAS); }
     "GraficaPie"            { return symbol(yytext(), sym.GRAFICA_PIE); }
-    "Titulo"                { return symbol(yytext(), sym.TITULO); }
     "TituloX"               { return symbol(yytext(), sym.TITULOX); }
     "TituloY"               { return symbol(yytext(), sym.TITULOY); }
+    "Titulo"                { return symbol(yytext(), sym.TITULO); }
     "EjeX"                  { return symbol(yytext(), sym.EJEX); }
     "Valores"               { return symbol(yytext(), sym.VALORES); }
-    "NewValor"              { return symbol(yytext(), sym.VALORES); }
+    "NewValor"              { return symbol(yytext(), sym.NEW_VALOR); }
     "console.write"         { return symbol(yytext(), sym.PRINT); }
     {ID}                    { return symbol(yytext(), sym.ID); }
     {String}                { return symbol(yytext(), sym.STRING_LITERAL); }

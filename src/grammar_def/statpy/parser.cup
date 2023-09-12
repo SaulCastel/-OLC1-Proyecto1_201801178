@@ -1,6 +1,6 @@
 package parsers.statpy;
 import java_cup.runtime.*;
-import java.util.HashMap;
+import java.util.LinkedList;
 
 parser code
 {:
@@ -14,6 +14,12 @@ parser code
                 (s.left)+ " Columna "+s.right+". Componente " + s.value + 
                 " no reconocido."); 
     }
+    String title;
+    String titleX;
+    String titleY;
+    LinkedList<Object> array = new LinkedList<>();
+    Object[] valueArray;
+    Object[] titleArray;
 :}
 
 terminal LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON, COMMA;
@@ -35,8 +41,8 @@ non terminal for_stmt, while_stmt, do_while_stmt, switch_stmt;
 non terminal cases, case, default_case;
 non terminal if_stmt, else_stmt, elif_stmt, continue_if;
 non terminal define_global_vars, bar_graph, pie_graph;
-non terminal bar_graph_body, pie_graph_body, list;
-non terminal json_value;
+non terminal bar_graph_body, pie_graph_body, list_definition, list_items;
+non terminal bar_graph_options, pie_graph_options, json_value;
 
 precedence left GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, EQUAL, NOT_EQUAL;
 precedence left AND, OR;
@@ -77,33 +83,70 @@ define_global_vars
 ::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET stmts RBRACKET;
 
 bar_graph
-::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET bar_graph_body RBRACKET;
+::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET bar_graph_body RBRACKET
+    {: graph.general.barras(title, titleX, titleY, valueArray, titleArray); :};
 
 bar_graph_body
-::= STRING TITULO ASSIGN expr SEMICOLON
+::= bar_graph_body bar_graph_options
     |
-    STRING TITULOX ASSIGN expr SEMICOLON
+    bar_graph_options;
+
+bar_graph_options
+::= STRING TITULO ASSIGN expr:v SEMICOLON
+    {: title = v.toString(); :}
     |
-    STRING TITULOY ASSIGN expr SEMICOLON
+    STRING TITULOX ASSIGN expr:v SEMICOLON
+    {: titleX = v.toString(); :}
     |
-    STRING SQR_BRACKETS EJEX ASSIGN list SEMICOLON
+    STRING TITULOY ASSIGN expr:v SEMICOLON
+    {: titleY = v.toString(); :}
     |
-    STRING SQR_BRACKETS VALORES ASSIGN list SEMICOLON;
+    STRING SQR_BRACKETS EJEX ASSIGN list_definition SEMICOLON
+    {:
+        titleArray = array.toArray();
+        array.clear();
+    :}
+    |
+    DOUBLE SQR_BRACKETS VALORES ASSIGN list_definition SEMICOLON
+    {:
+        valueArray = array.toArray();
+        array.clear();
+    :};
 
 pie_graph
-::= VOID GRAFICA_PIE LPAREN RPAREN LBRACKET pie_graph_body RBRACKET;
+::= VOID GRAFICA_PIE LPAREN RPAREN LBRACKET pie_graph_body RBRACKET
+    {: graph.general.pie(title, valueArray, titleArray); :};
 
 pie_graph_body
-::= STRING TITULO ASSIGN expr SEMICOLON
+::= pie_graph_body pie_graph_options
     |
-    STRING SQR_BRACKETS EJEX ASSIGN list SEMICOLON
-    |
-    STRING SQR_BRACKETS VALORES ASSIGN list SEMICOLON;
+    pie_graph_options;
 
-list
-::= LBRACKET list expr RBRACKET
+pie_graph_options
+::= STRING TITULO ASSIGN expr:v SEMICOLON
+    {: title = v.toString(); :}
     |
-    expr COMMA;
+    STRING SQR_BRACKETS EJEX ASSIGN list_definition SEMICOLON
+    {:
+        titleArray = array.toArray();
+        array.clear();
+    :}
+    |
+    DOUBLE SQR_BRACKETS VALORES ASSIGN list_definition SEMICOLON
+    {:
+        valueArray = array.toArray();
+        array.clear();
+    :};
+
+list_definition
+::= LBRACKET list_items RBRACKET;
+
+list_items
+::= list_items COMMA expr:item
+    {: array.add(item); :}
+    |
+    expr:item
+    {: array.add(item); :};
 
 variable_stmt ::= type ID ASSIGN expr;
 
@@ -194,7 +237,8 @@ expr
     {: RESULT = v; :};
 
 json_value
-::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL COMMA STRING_LITERAL RBRACKET;
+::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL COMMA STRING_LITERAL RBRACKET
+    {: RESULT = "5.0"; :};
 
 binary_expr
 ::= arithmetic_expr:v
