@@ -8,7 +8,6 @@ public class Main{
     public static void main(String[] args) {
         String file = "/home/saulc/ejemplo.sp";
         parse(file);
-        //barGraph();
     }
     
     private static void parse(String file){
@@ -21,11 +20,5 @@ public class Main{
         catch(Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    private static void barGraph(){
-        Object[] valores = {1.0,2.0,3.0};
-        String[] ejex = {"v1","v2","v3"};
-        graph.general.barras("Grafica barras", "categorias", "valores", valores, ejex);
     }
 }

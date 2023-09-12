@@ -61,7 +61,7 @@ ID = [a-z][a-z0-9_]*
     "NewValor"              { return symbol(yytext(), sym.NEW_VALOR); }
     "console.write"         { return symbol(yytext(), sym.PRINT); }
     {ID}                    { return symbol(yytext(), sym.ID); }
-    {String}                { return symbol(yytext(), sym.STRING_LITERAL); }
+    {String}                { return symbol(yytext().replaceAll("\"",""), sym.STRING_LITERAL); }
     {Double}                { return symbol(yytext(), sym.DOUBLE_LITERAL); }
     {Integer}               { return symbol(yytext(), sym.INTEGER_LITERAL); }
     "+"                     { return symbol(yytext(), sym.ADD); }
