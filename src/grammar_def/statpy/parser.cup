@@ -1,6 +1,7 @@
 package parsers.statpy;
 import java_cup.runtime.*;
 import java.util.LinkedList;
+import java.util.HashMap;
 
 parser code
 {:
@@ -20,6 +21,9 @@ parser code
     LinkedList<Object> array = new LinkedList<>();
     Object[] valueArray;
     Object[] titleArray;
+    HashMap<String, Object> symbol_table = new HashMap<>();
+    String key;
+    Object value;
 :}
 
 terminal LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON, COMMA;
@@ -43,6 +47,7 @@ non terminal if_stmt, else_stmt, elif_stmt, continue_if;
 non terminal define_global_vars, bar_graph, pie_graph;
 non terminal bar_graph_body, pie_graph_body, list_definition, list_items;
 non terminal bar_graph_options, pie_graph_options, json_value;
+non terminal global_vars, var_assignment, var_declaration;
 
 precedence left GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, EQUAL, NOT_EQUAL;
 precedence left AND, OR;
@@ -80,7 +85,14 @@ stmt
     switch_stmt;
 
 define_global_vars
-::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET stmts RBRACKET;
+::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET global_vars RBRACKET;
+
+global_vars
+::= global_vars variable_stmt SEMICOLON
+    {: symbol_table.put(key, value); :}
+    |
+    variable_stmt SEMICOLON
+    {: symbol_table.put(key, value); :};
 
 bar_graph
 ::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET bar_graph_body RBRACKET
@@ -148,7 +160,20 @@ list_items
     expr:item
     {: array.add(item); :};
 
-variable_stmt ::= type ID ASSIGN expr;
+variable_stmt
+::= var_declaration
+    |
+    var_assignment;
+
+var_declaration
+::= type ID:k ASSIGN expr:v
+    {: key = k.toString(); value = v; :}
+    |
+    type ID:k
+    {: key = k.toString(); value = null; :};
+
+var_assignment
+::= ID ASSIGN expr;
 
 print_stmt
 ::= PRINT LPAREN expr:e RPAREN;
@@ -230,15 +255,15 @@ expr
     expr_literal:v
     {: RESULT = v; :}
     |
-    ID:v
-    {: RESULT = v; :}
+    ID:key
+    {: RESULT = symbol_table.get(key.toString()); :}
     |
     json_value:v
     {: RESULT = v; :};
 
 json_value
-::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL COMMA STRING_LITERAL RBRACKET
-    {: RESULT = "5.0"; :};
+::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL:file COMMA STRING_LITERAL:key RBRACKET
+    {: RESULT = main.Main.json_files.get(file.toString()).get(key.toString()); :};
 
 binary_expr
 ::= arithmetic_expr:v

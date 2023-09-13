@@ -37,35 +37,7 @@ public class general {
         true, true, true
         );
 
-        ChartFrame frame = new ChartFrame("Ejemplo", grafica);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    public static void linea(
-      String Titulo,
-      String TituloX,
-      String TituloY,
-      double valores[],
-      String ejex[]
-    ) {
-        //Ingreso de datos
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-        for (int i = 0; i < 5; i++) {
-            dataset.addValue(valores[i], "Valor", ejex[i]);
-        }
-
-        // Creación de gráfica
-        JFreeChart grafica
-          = ChartFactory.createLineChart(
-            Titulo,
-            TituloX,
-            TituloY,
-            dataset);
-
-        // Mostrar
-        ChartFrame frame = new ChartFrame("Ejemplo", grafica);
+        ChartFrame frame = new ChartFrame(Titulo, grafica);
         frame.pack();
         frame.setVisible(true);
     }
@@ -87,7 +59,7 @@ public class general {
           = ChartFactory.createPieChart(Titulo, dataset);
 
         // Mostrar
-        ChartFrame frame = new ChartFrame("Ejemplo", grafica);
+        ChartFrame frame = new ChartFrame(Titulo, grafica);
         frame.pack();
         frame.setVisible(true);
     }

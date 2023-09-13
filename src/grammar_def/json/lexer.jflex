@@ -9,6 +9,7 @@ import java_cup.runtime.*;
 %cup
 %line
 %column
+%caseless
 
 %{
     private Symbol symbol(String value, int type) {
@@ -19,7 +20,9 @@ import java_cup.runtime.*;
 LineTerminator  = \r|\n|\r\n
 WhiteSpace      = {LineTerminator} | [ \t\f]
 
-Comment = "/*"~"*/"
+SComment = "//"[^\r\n]*
+MComment = "/*"~"*/"
+Comment = {SComment} | {MComment}
 String = "\""~"\""
 Double = [0-9]+"."[0-9]+
 
@@ -27,7 +30,7 @@ Double = [0-9]+"."[0-9]+
 
 <YYINITIAL> {
     /* identifiers */ 
-    {String}                { return symbol(yytext(), sym.STRING); }
+    {String}                { return symbol(yytext().replaceAll("\"", ""), sym.STRING); }
     {Double}                { return symbol(yytext(), sym.DOUBLE); }
     "{"                     { return symbol(yytext(), sym.LBRACKET); }
     "}"                     { return symbol(yytext(), sym.RBRACKET); }
@@ -42,4 +45,4 @@ Double = [0-9]+"."[0-9]+
 }
 
 /* error fallback */
-[^]                 { throw new Error("Illegal character <"+ yytext()+">"); }
+[^]                 { throw new Error("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn); }

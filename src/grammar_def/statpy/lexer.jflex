@@ -87,6 +87,7 @@ ID = [a-z][a-z0-9_]*
     ","                     { return symbol(yytext(), sym.COMMA); }
     "[]"                    { return symbol(yytext(), sym.SQR_BRACKETS); }
     "$"                     { return symbol(yytext(), sym.DOLLAR); }
+    ":"                     { return symbol(yytext(), sym.COLON); }
     {Char}                  { return symbol(yytext(), sym.CHAR_LITERAL); }
 
     /* comments */
@@ -97,4 +98,4 @@ ID = [a-z][a-z0-9_]*
 }
 
 /* error fallback */
-[^]                 { throw new Error("Illegal character <"+ yytext()+">"); }
+[^]                 { throw new Error("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn); }

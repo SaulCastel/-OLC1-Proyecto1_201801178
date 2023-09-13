@@ -102,7 +102,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
 
-    HashMap<String, String> json = new HashMap<String, String>();
+    HashMap<String, Object> json = new HashMap<>();
 
     public void syntax_error(Symbol s){
         System.out.println("Error Sintáctico en la Línea " + (s.left) +
@@ -158,7 +158,7 @@ class CUP$Parser$actions {
           case 1: // json ::= LBRACKET pairs RBRACKET 
             {
               Object RESULT =null;
-		 System.out.println(json); 
+		 main.Main.json_files.put(main.Main.file_name, json); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("json",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -200,7 +200,7 @@ class CUP$Parser$actions {
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object v = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 json.put(k, v.toString()); 
+		 json.put(k, v); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("key_value",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -223,7 +223,7 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		String v = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		Object v = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 RESULT = v; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("value",3, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
