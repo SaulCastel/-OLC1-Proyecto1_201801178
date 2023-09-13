@@ -10,6 +10,7 @@ import java_cup.runtime.*;
 %line
 %column
 %caseless
+%debug
 
 %{
     private Symbol symbol(String value, int type) {
@@ -24,7 +25,7 @@ MComment = "/*"~"*/"
 Comment = {SComment} | {MComment}
 Integer = [0-9]+
 Double = [0-9]+"."[0-9]+
-Char = ["'].["']
+Char = [\"'].[\"']
 String = "\""~"\""
 ID = [a-z][a-z0-9_]*
 
@@ -62,6 +63,7 @@ ID = [a-z][a-z0-9_]*
     "console.write"         { return symbol(yytext(), sym.PRINT); }
     {ID}                    { return symbol(yytext(), sym.ID); }
     {String}                { return symbol(yytext().replaceAll("\"",""), sym.STRING_LITERAL); }
+    {Char}                  { return symbol(yytext(), sym.CHAR_LITERAL); }
     {Double}                { return symbol(yytext(), sym.DOUBLE_LITERAL); }
     {Integer}               { return symbol(yytext(), sym.INTEGER_LITERAL); }
     "+"                     { return symbol(yytext(), sym.ADD); }
@@ -88,7 +90,6 @@ ID = [a-z][a-z0-9_]*
     "[]"                    { return symbol(yytext(), sym.SQR_BRACKETS); }
     "$"                     { return symbol(yytext(), sym.DOLLAR); }
     ":"                     { return symbol(yytext(), sym.COLON); }
-    {Char}                  { return symbol(yytext(), sym.CHAR_LITERAL); }
 
     /* comments */
     {Comment}               { /* ignore */ }

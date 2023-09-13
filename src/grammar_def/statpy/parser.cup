@@ -82,7 +82,9 @@ stmt
     |
     do_while_stmt SEMICOLON
     |
-    switch_stmt;
+    switch_stmt
+    |
+    BREAK SEMICOLON;
 
 define_global_vars
 ::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET global_vars RBRACKET;
@@ -216,9 +218,7 @@ cases
     case;
 
 case
-::= CASE expr_literal COLON stmts BREAK SEMICOLON
-    |
-    CASE expr_literal COLON stmts;
+::= CASE expr_literal COLON stmts;
 
 default_case
 ::= DEFAULT COLON stmts;
