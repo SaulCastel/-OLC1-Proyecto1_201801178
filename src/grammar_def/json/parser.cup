@@ -26,7 +26,7 @@ start with json;
 
 json        ::= LBRACKET pairs RBRACKET
                 {:
-                    main.ParserState.json_files.put(main.ParserState.file_name, json);
+                    main.ParserState.json_files.put(main.ParserState.file_name.toLowerCase(), json);
                     main.ParserState.output.add("--Parseo finalizado--");
                 :};
 
@@ -38,7 +38,7 @@ pairs       ::= pairs key_value COMMA
 ;
 
 key_value   ::= STRING:k COLON value:v
-                {: json.put(k, v); :}
+                {: json.put(k.toLowerCase(), v); :}
 ;
 
 value       ::= STRING:v

@@ -264,7 +264,7 @@ expr
             RESULT = symbol_table.get(key.toString().toLowerCase());
         }
         catch(Exception e){
-            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString().toLowerCase()+" no existe");
         }
     :}
     |
@@ -275,10 +275,10 @@ json_value
 ::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL:file COMMA STRING_LITERAL:key RBRACKET
     {:
         try{
-            RESULT = main.ParserState.json_files.get(file.toString()).get(key.toString());
+            RESULT = main.ParserState.json_files.get(file.toString().toLowerCase()).get(key.toString().toLowerCase());
         }
         catch(Exception e){
-            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString().toLowerCase()+" no existe");
         }
     :};
 

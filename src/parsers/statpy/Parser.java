@@ -1376,7 +1376,7 @@ class CUP$Parser$actions {
             RESULT = symbol_table.get(key.toString().toLowerCase());
         }
         catch(Exception e){
-            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString().toLowerCase()+" no existe");
         }
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",1, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1407,10 +1407,10 @@ class CUP$Parser$actions {
 		Object key = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
         try{
-            RESULT = main.ParserState.json_files.get(file.toString()).get(key.toString());
+            RESULT = main.ParserState.json_files.get(file.toString().toLowerCase()).get(key.toString().toLowerCase());
         }
         catch(Exception e){
-            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString().toLowerCase()+" no existe");
         }
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("json_value",32, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

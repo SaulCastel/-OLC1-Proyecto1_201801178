@@ -159,7 +159,7 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
-                    main.ParserState.json_files.put(main.ParserState.file_name, json);
+                    main.ParserState.json_files.put(main.ParserState.file_name.toLowerCase(), json);
                     main.ParserState.output.add("--Parseo finalizado--");
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("json",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -203,7 +203,7 @@ class CUP$Parser$actions {
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object v = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 json.put(k, v); 
+		 json.put(k.toLowerCase(), v); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("key_value",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
