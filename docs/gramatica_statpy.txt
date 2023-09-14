@@ -1,0 +1,247 @@
+<document>
+::= VOID MAIN LPAREN RPAREN LBRACKET <stmts> RBRACKET
+
+<stmts>
+::= <stmts> <stmt>
+    |
+    <stmt>
+
+<stmt>
+::= <variable_stmt> SEMICOLON
+    |
+    <print_stmt> SEMICOLON
+    |
+    <define_global_vars>
+    |
+    <bar_graph>
+    |
+    <pie_graph>
+    |
+    <if_stmt>
+    |
+    <for_stmt>
+    |
+    <while_stmt>
+    |
+    <do_while_stmt> SEMICOLON
+    |
+    <switch_stmt>
+    |
+    BREAK SEMICOLON
+
+<define_global_vars>
+::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET <global_vars> RBRACKET
+
+<global_vars>
+::= <global_vars> <variable_stmt> SEMICOLON
+    
+    |
+    <variable_stmt> SEMICOLON
+    
+
+<bar_graph>
+::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET <bar_graph_body> RBRACKET
+    
+
+<bar_graph_body>
+::= <bar_graph_body> <bar_graph_options>
+    |
+    <bar_graph_options>
+
+<bar_graph_options>
+::= STRING TITULO ASSIGN <expr> SEMICOLON
+    
+    |
+    STRING TITULOX ASSIGN <expr> SEMICOLON
+    
+    |
+    STRING TITULOY ASSIGN <expr> SEMICOLON
+    
+    |
+    STRING SQR_BRACKETS EJEX ASSIGN <list_definition> SEMICOLON
+    |
+    DOUBLE SQR_BRACKETS VALORES ASSIGN <list_definition> SEMICOLON
+
+<pie_graph>
+::= VOID GRAFICA_PIE LPAREN RPAREN LBRACKET <pie_graph_body> RBRACKET
+    
+
+<pie_graph_body>
+::= <pie_graph_body> <pie_graph_options>
+    |
+    <pie_graph_options>
+
+<pie_graph_options>
+::= STRING TITULO ASSIGN <expr> SEMICOLON
+    
+    |
+    STRING SQR_BRACKETS EJEX ASSIGN <list_definition> SEMICOLON
+    |
+    DOUBLE SQR_BRACKETS VALORES ASSIGN <list_definition> SEMICOLON
+
+<list_definition>
+::= LBRACKET <list_items> RBRACKET
+
+<list_items>
+::= <list_items> COMMA <expr>
+    
+    |
+    <expr>
+    
+
+<variable_stmt>
+::= <var_declaration>
+    |
+    <var_assignment>
+
+<var_declaration>
+::= <type> ID ASSIGN <expr>
+    
+    |
+    <type> ID
+    
+
+<var_assignment>
+::= ID ASSIGN <expr>
+
+<print_stmt>
+::= PRINT LPAREN <expr> RPAREN
+
+<if_stmt>
+::= IF LPAREN <expr> RPAREN LBRACKET <stmts> RBRACKET <continue_if> <else_stmt>
+    |
+    IF LPAREN <expr> RPAREN LBRACKET <stmts> RBRACKET <continue_if>
+    |
+    IF LPAREN <expr> RPAREN LBRACKET <stmts> RBRACKET <else_stmt>
+    |
+    IF LPAREN <expr> RPAREN LBRACKET <stmts> RBRACKET
+
+<continue_if>
+::= <continue_if> <elif_stmt>
+    |
+    <elif_stmt>
+
+<elif_stmt>
+::= ELSE IF LPAREN <expr> RPAREN LBRACKET <stmts> RBRACKET
+
+<else_stmt>
+::= ELSE LBRACKET <stmts> RBRACKET
+
+<for_stmt>
+::= FOR LPAREN <variable_stmt> SEMICOLON <expr> SEMICOLON ID INC RPAREN LBRACKET <stmts> RBRACKET
+
+<while_stmt>
+::= WHILE LPAREN <expr> RPAREN LBRACKET <stmts> RBRACKET
+
+<do_while_stmt>
+::= DO LBRACKET <stmts> RBRACKET WHILE LPAREN <expr> RPAREN
+
+<switch_stmt>
+::= SWITCH LPAREN <expr> RPAREN LBRACKET <cases> <default_case> RBRACKET
+
+<cases>
+::= <cases> <case>
+    |
+    <case>
+
+<case>
+::= CASE <expr_literal> COLON <stmts>
+
+<default_case>
+::= DEFAULT COLON <stmts>
+
+<type>
+::= INTEGER
+    
+    |
+    DOUBLE
+    
+    |
+    STRING
+    
+    |
+    CHAR
+    
+    |
+    VOID
+    
+    |
+    BOOL
+    
+
+<expr>
+::= <binary_expr>
+    
+    |
+    <unary_expr>
+    
+    |
+    LPAREN <expr> RPAREN
+    
+    |
+    <expr_literal>
+    
+    |
+    ID
+    |
+    <json_value>
+    
+
+<json_value>
+::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL COMMA STRING_LITERAL RBRACKET
+
+<binary_expr>
+::= <arithmetic_expr>
+    
+    |
+    <relational_expr>
+    
+    |
+    <expr> AND <expr>
+    |
+    <expr> OR <expr>
+
+<unary_expr>
+::= NOT <expr>
+    |
+    SUB <expr> %<prec> MINUS
+
+<arithmetic_expr>
+::= <expr> ADD <expr>
+    |
+    <expr> SUB <expr>
+    |
+    <expr> TIMES <expr>
+    |
+    <expr> DIV <expr>
+
+<relational_expr>
+::= <expr> GREATER <expr>
+    |
+    <expr> LESS <expr>
+    |
+    <expr> GREATER_EQUAL <expr>
+    |
+    <expr> LESS_EQUAL <expr>
+    |
+    <expr> EQUAL <expr>
+    |
+    <expr> NOT_EQUAL <expr>
+
+<expr_literal>
+::= STRING_LITERAL
+    
+    |
+    INTEGER_LITERAL
+    
+    |
+    CHAR_LITERAL
+    
+    |
+    DOUBLE_LITERAL
+    
+    |
+    TRUE
+    
+    |
+    FALSE

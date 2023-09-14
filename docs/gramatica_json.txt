@@ -1,0 +1,12 @@
+### Definición de gramática para los archivos JSON
+
+<json> ::= "{" <pairs> "}"
+
+<pairs> ::= <pairs> "," <key_value>
+        |   <key_value>
+        |   <key_value> ","
+
+<key_value> ::= string ":" <value>
+
+<value> ::= string
+        |   double
