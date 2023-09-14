@@ -45,4 +45,4 @@ Double = [0-9]+"."[0-9]+
 }
 
 /* error fallback */
-[^]                 { throw new Error("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn); }
+[^]                 { main.ParserState.output.add("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn); }

@@ -6,15 +6,16 @@ import java.util.HashMap;
 parser code
 {:
     public void syntax_error(Symbol s){
-        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        main.ParserState.output.add("Error Sintáctico en la Línea " + (s.left) +
                 " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
     }
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.out.println("Error síntactico irrecuperable en la Línea " + 
+    public void unrecovered_syntax_error(Symbol s){ 
+        main.ParserState.output.add("Error síntactico irrecuperable en la Línea " + 
                 (s.left)+ " Columna "+s.right+". Componente " + s.value + 
                 " no reconocido."); 
     }
+
     String title;
     String titleX;
     String titleY;
@@ -56,7 +57,9 @@ precedence left ADD, SUB;
 precedence left TIMES, DIV;
 precedence left MINUS;
 
-document ::= VOID MAIN LPAREN RPAREN LBRACKET stmts RBRACKET;
+document
+::= VOID MAIN LPAREN RPAREN LBRACKET stmts RBRACKET
+    {: main.ParserState.output.add("--Parseo finalizado--"); :};
 
 stmts
 ::= stmts stmt
@@ -91,10 +94,10 @@ define_global_vars
 
 global_vars
 ::= global_vars variable_stmt SEMICOLON
-    {: symbol_table.put(key, value); :}
+    {: symbol_table.put(key.toLowerCase(), value); :}
     |
     variable_stmt SEMICOLON
-    {: symbol_table.put(key, value); :};
+    {: symbol_table.put(key.toLowerCase(), value); :};
 
 bar_graph
 ::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET bar_graph_body RBRACKET
@@ -256,14 +259,28 @@ expr
     {: RESULT = v; :}
     |
     ID:key
-    {: RESULT = symbol_table.get(key.toString()); :}
+    {:
+        try{
+            RESULT = symbol_table.get(key.toString().toLowerCase());
+        }
+        catch(Exception e){
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+        }
+    :}
     |
     json_value:v
     {: RESULT = v; :};
 
 json_value
 ::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL:file COMMA STRING_LITERAL:key RBRACKET
-    {: RESULT = main.Main.json_files.get(file.toString()).get(key.toString()); :};
+    {:
+        try{
+            RESULT = main.ParserState.json_files.get(file.toString()).get(key.toString());
+        }
+        catch(Exception e){
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+        }
+    :};
 
 binary_expr
 ::= arithmetic_expr:v

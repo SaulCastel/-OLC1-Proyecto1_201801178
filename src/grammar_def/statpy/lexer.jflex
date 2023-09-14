@@ -10,7 +10,6 @@ import java_cup.runtime.*;
 %line
 %column
 %caseless
-%debug
 
 %{
     private Symbol symbol(String value, int type) {
@@ -99,4 +98,4 @@ ID = [a-z][a-z0-9_]*
 }
 
 /* error fallback */
-[^]                 { throw new Error("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn); }
+[^]                 { main.ParserState.output.add("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn); }

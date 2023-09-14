@@ -639,15 +639,16 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     public void syntax_error(Symbol s){
-        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        main.ParserState.output.add("Error Sintáctico en la Línea " + (s.left) +
                 " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
     }
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.out.println("Error síntactico irrecuperable en la Línea " + 
+    public void unrecovered_syntax_error(Symbol s){ 
+        main.ParserState.output.add("Error síntactico irrecuperable en la Línea " + 
                 (s.left)+ " Columna "+s.right+". Componente " + s.value + 
                 " no reconocido."); 
     }
+
     String title;
     String titleX;
     String titleY;
@@ -687,7 +688,7 @@ class CUP$Parser$actions {
           case 0: // document ::= VOID MAIN LPAREN RPAREN LBRACKET stmts RBRACKET 
             {
               Object RESULT =null;
-
+		 main.ParserState.output.add("--Parseo finalizado--"); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("document",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -836,7 +837,7 @@ class CUP$Parser$actions {
           case 16: // global_vars ::= global_vars variable_stmt SEMICOLON 
             {
               Object RESULT =null;
-		 symbol_table.put(key, value); 
+		 symbol_table.put(key.toLowerCase(), value); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("global_vars",33, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -845,7 +846,7 @@ class CUP$Parser$actions {
           case 17: // global_vars ::= variable_stmt SEMICOLON 
             {
               Object RESULT =null;
-		 symbol_table.put(key, value); 
+		 symbol_table.put(key.toLowerCase(), value); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("global_vars",33, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1370,7 +1371,14 @@ class CUP$Parser$actions {
 		int keyleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int keyright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object key = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = symbol_table.get(key.toString()); 
+		
+        try{
+            RESULT = symbol_table.get(key.toString().toLowerCase());
+        }
+        catch(Exception e){
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+        }
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",1, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1397,7 +1405,14 @@ class CUP$Parser$actions {
 		int keyleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int keyright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		Object key = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		 RESULT = main.Main.json_files.get(file.toString()).get(key.toString()); 
+		
+        try{
+            RESULT = main.ParserState.json_files.get(file.toString()).get(key.toString());
+        }
+        catch(Exception e){
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString()+" no existe");
+        }
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("json_value",32, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

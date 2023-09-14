@@ -277,6 +277,7 @@ public class Lexer implements java_cup.runtime.Scanner {
   private boolean zzAtBOL = true;
 
   /** Whether the user-EOF-code has already been executed. */
+  @SuppressWarnings("unused")
   private boolean zzEOFDone;
 
   /* user code: */
@@ -545,18 +546,6 @@ public class Lexer implements java_cup.runtime.Scanner {
   }
 
 
-  /**
-   * Contains user EOF-code, which will be executed exactly once,
-   * when the end of file is reached
-   */
-  private void zzDoEOF() throws java.io.IOException {
-    if (!zzEOFDone) {
-      zzEOFDone = true;
-    
-  yyclose();    }
-  }
-
-
 
 
   /**
@@ -703,13 +692,12 @@ public class Lexer implements java_cup.runtime.Scanner {
 
       if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
         zzAtEOF = true;
-            zzDoEOF();
           { return new java_cup.runtime.Symbol(sym.EOF); }
       }
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { throw new Error("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn);
+            { main.ParserState.output.add("Entrada desconocida <"+ yytext()+"> en "+yyline+", "+yycolumn);
             }
           // fall through
           case 9: break;

@@ -105,12 +105,12 @@ public class Parser extends java_cup.runtime.lr_parser {
     HashMap<String, Object> json = new HashMap<>();
 
     public void syntax_error(Symbol s){
-        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        main.ParserState.output.add("Error Sintáctico en la Línea " + (s.left) +
                 " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
     }
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.out.println("Error síntactico irrecuperable en la Línea " + 
+    public void unrecovered_syntax_error(Symbol s){
+        main.ParserState.output.add("Error síntactico irrecuperable en la Línea " + 
                 (s.left)+ " Columna "+s.right+". Componente " + s.value + 
                 " no reconocido."); 
     }
@@ -158,7 +158,10 @@ class CUP$Parser$actions {
           case 1: // json ::= LBRACKET pairs RBRACKET 
             {
               Object RESULT =null;
-		 main.Main.json_files.put(main.Main.file_name, json); 
+		
+                    main.ParserState.json_files.put(main.ParserState.file_name, json);
+                    main.ParserState.output.add("--Parseo finalizado--");
+                
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("json",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

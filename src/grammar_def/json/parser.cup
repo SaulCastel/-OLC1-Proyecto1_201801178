@@ -7,12 +7,12 @@ parser code
     HashMap<String, Object> json = new HashMap<>();
 
     public void syntax_error(Symbol s){
-        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        main.ParserState.output.add("Error Sintáctico en la Línea " + (s.left) +
                 " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
     }
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.out.println("Error síntactico irrecuperable en la Línea " + 
+    public void unrecovered_syntax_error(Symbol s){
+        main.ParserState.output.add("Error síntactico irrecuperable en la Línea " + 
                 (s.left)+ " Columna "+s.right+". Componente " + s.value + 
                 " no reconocido."); 
     }
@@ -25,7 +25,10 @@ non terminal json, pairs, key_value, value;
 start with json;
 
 json        ::= LBRACKET pairs RBRACKET
-                {: main.Main.json_files.put(main.Main.file_name, json); :};
+                {:
+                    main.ParserState.json_files.put(main.ParserState.file_name, json);
+                    main.ParserState.output.add("--Parseo finalizado--");
+                :};
 
 pairs       ::= pairs key_value COMMA
                 |
