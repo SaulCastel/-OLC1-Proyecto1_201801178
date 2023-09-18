@@ -442,6 +442,7 @@ public class Lexer implements java_cup.runtime.Scanner {
 
   /* user code: */
     private Symbol symbol(String value, int type) {
+        main.ParserState.rows += "<tr><td>"+sym.terminalNames[type]+"</td><td>"+value+"</td><td>"+yyline+"</td><td>"+yycolumn+"</td></tr>";
         return new Symbol(type, yyline, yycolumn, value);
     }
 
