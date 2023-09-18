@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 parser code
 {:
-    HashMap<String, Object> json = new HashMap<>();
+    HashMap<String, String> json = new HashMap<>();
 
     public void syntax_error(Symbol s){
         main.ParserState.output.add("Error Sintáctico en la Línea " + (s.left) +
@@ -18,9 +18,9 @@ parser code
     }
 :}
 
-terminal String LBRACKET, RBRACKET, COMMA, COLON, STRING;
-terminal DOUBLE;
-non terminal json, pairs, key_value, value;
+terminal String LBRACKET, RBRACKET, COMMA, COLON, STRING, DOUBLE;
+non terminal json, pairs, key_value;
+non terminal String value;
 
 start with json;
 
@@ -30,11 +30,9 @@ json        ::= LBRACKET pairs RBRACKET
                     main.ParserState.output.add("--Parseo finalizado--");
                 :};
 
-pairs       ::= pairs key_value COMMA
+pairs       ::= pairs COMMA key_value
                 |
-                pairs key_value
-                |
-                key_value COMMA
+                key_value
 ;
 
 key_value   ::= STRING:k COLON value:v

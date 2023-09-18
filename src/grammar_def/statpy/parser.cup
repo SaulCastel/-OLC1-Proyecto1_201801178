@@ -19,36 +19,38 @@ parser code
     String title;
     String titleX;
     String titleY;
-    LinkedList<Object> array = new LinkedList<>();
     Object[] valueArray;
     Object[] titleArray;
-    HashMap<String, Object> symbol_table = new HashMap<>();
-    String key;
-    Object value;
+    HashMap<String, String> symbol_table = new HashMap<>();
 :}
 
-terminal LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON, COMMA;
-terminal STRING_LITERAL, INTEGER_LITERAL, DOUBLE_LITERAL, CHAR_LITERAL;
-terminal STRING, INTEGER, DOUBLE, CHAR, BOOL;
-terminal TRUE, FALSE, AND, OR, NOT, ASSIGN, ID;
-terminal GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL;
-terminal MINUS, PRINT, VOID, MAIN, LBRACKET, RBRACKET;
-terminal FOR, INC, WHILE, DO, SWITCH, CASE, DEFAULT, COLON, BREAK;
-terminal IF, ELSE;
-terminal SQR_BRACKETS, EJEX, VALORES, TITULO, TITULOX, TITULOY;
-terminal DEFINIR_GLOBALES, GRAFICA_BARRAS, GRAFICA_PIE;
-terminal DOLLAR, NEW_VALOR;
+terminal String LPAREN, RPAREN, ADD, SUB, DIV, TIMES, SEMICOLON, COMMA;
+terminal String STRING_LITERAL, INTEGER_LITERAL, DOUBLE_LITERAL, CHAR_LITERAL;
+terminal String STRING, INTEGER, DOUBLE, CHAR, BOOL;
+terminal String TRUE, FALSE, AND, OR, NOT, ASSIGN, ID;
+terminal String GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL;
+terminal String MINUS, PRINT, VOID, MAIN, LBRACKET, RBRACKET;
+terminal String FOR, INC, WHILE, DO, SWITCH, CASE, DEFAULT, COLON, BREAK;
+terminal String IF, ELSE;
+terminal String SQR_BRACKETS, EJEX, VALORES, TITULO, TITULOX, TITULOY;
+terminal String DEFINIR_GLOBALES, GRAFICA_BARRAS, GRAFICA_PIE;
+terminal String DOLLAR, NEW_VALOR;
 
-non terminal document, expr, binary_expr, unary_expr;
-non terminal expr_literal, arithmetic_expr, relational_expr;
-non terminal stmts, stmt, variable_stmt, print_stmt, type;
+non terminal document;
+non terminal String expr, binary_expr, unary_expr;
+non terminal String expr_literal, arithmetic_expr, relational_expr;
+non terminal LinkedList stmts, stmt;
+non terminal variable_stmt, print_stmt, type;
 non terminal for_stmt, while_stmt, do_while_stmt, switch_stmt;
 non terminal cases, case, default_case;
 non terminal if_stmt, else_stmt, elif_stmt, continue_if;
 non terminal define_global_vars, bar_graph, pie_graph;
-non terminal bar_graph_body, pie_graph_body, list_definition, list_items;
-non terminal bar_graph_options, pie_graph_options, json_value;
+non terminal bar_graph_body, pie_graph_body;
+non terminal LinkedList list_items;
+non terminal bar_graph_options, pie_graph_options;
+non terminal String json_value;
 non terminal global_vars, var_assignment, var_declaration;
+non terminal String translation_exp;
 
 precedence left GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, EQUAL, NOT_EQUAL;
 precedence left AND, OR;
@@ -62,20 +64,16 @@ document
     {: main.ParserState.output.add("--Parseo finalizado--"); :};
 
 stmts
-::= stmts stmt
+::= stmts stmt:v
+    {: RESULT = v; :}
     |
-    stmt;
+    stmt:v
+    {: RESULT = v; :};
 
 stmt
-::= variable_stmt SEMICOLON
+::= variable_stmt:v SEMICOLON
     |
     print_stmt SEMICOLON
-    |
-    define_global_vars
-    |
-    bar_graph
-    |
-    pie_graph
     |
     if_stmt
     |
@@ -87,17 +85,52 @@ stmt
     |
     switch_stmt
     |
-    BREAK SEMICOLON;
+    BREAK SEMICOLON
+    |
+    define_global_vars
+    |
+    bar_graph
+    |
+    pie_graph;
+
+//---INICIO SECCION DE GRAFICAS---
+translation_exp
+::= expr_literal:v
+    {: RESULT = v; :}
+    |
+    ID:key
+    {:
+        try{
+            RESULT = symbol_table.get(key.toLowerCase());
+        }
+        catch(Exception e){
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toLowerCase()+" no existe");
+        }
+    :}
+    |
+    json_value:v
+    {: RESULT = v; :};
+
+json_value
+::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL:file COMMA STRING_LITERAL:key RBRACKET
+    {:
+        try{
+            RESULT = (String) main.ParserState.json_files.get(file.toLowerCase()).get(key.toLowerCase());
+        }
+        catch(Exception e){
+            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toLowerCase()+" no existe");
+        }
+    :};
 
 define_global_vars
 ::= VOID DEFINIR_GLOBALES LPAREN RPAREN LBRACKET global_vars RBRACKET;
 
 global_vars
-::= global_vars variable_stmt SEMICOLON
-    {: symbol_table.put(key.toLowerCase(), value); :}
+::= global_vars type ID:k ASSIGN translation_exp:v SEMICOLON
+    {: symbol_table.put(k.toLowerCase(), v); :}
     |
-    variable_stmt SEMICOLON
-    {: symbol_table.put(key.toLowerCase(), value); :};
+    type ID:k ASSIGN translation_exp:v SEMICOLON
+    {: symbol_table.put(k.toLowerCase(), v); :};
 
 bar_graph
 ::= VOID GRAFICA_BARRAS LPAREN RPAREN LBRACKET bar_graph_body RBRACKET
@@ -109,25 +142,23 @@ bar_graph_body
     bar_graph_options;
 
 bar_graph_options
-::= STRING TITULO ASSIGN expr:v SEMICOLON
-    {: title = v.toString(); :}
+::= STRING TITULO ASSIGN translation_exp:v SEMICOLON
+    {: title = v; :}
     |
-    STRING TITULOX ASSIGN expr:v SEMICOLON
-    {: titleX = v.toString(); :}
+    STRING TITULOX ASSIGN translation_exp:v SEMICOLON
+    {: titleX = v; :}
     |
-    STRING TITULOY ASSIGN expr:v SEMICOLON
-    {: titleY = v.toString(); :}
+    STRING TITULOY ASSIGN translation_exp:v SEMICOLON
+    {: titleY = v; :}
     |
-    STRING SQR_BRACKETS EJEX ASSIGN list_definition SEMICOLON
+    STRING SQR_BRACKETS EJEX ASSIGN LBRACKET list_items:arr RBRACKET SEMICOLON
     {:
-        titleArray = array.toArray();
-        array.clear();
+        titleArray = arr.toArray();
     :}
     |
-    DOUBLE SQR_BRACKETS VALORES ASSIGN list_definition SEMICOLON
+    DOUBLE SQR_BRACKETS VALORES ASSIGN LBRACKET list_items:arr RBRACKET SEMICOLON
     {:
-        valueArray = array.toArray();
-        array.clear();
+        valueArray = arr.toArray();
     :};
 
 pie_graph
@@ -140,42 +171,46 @@ pie_graph_body
     pie_graph_options;
 
 pie_graph_options
-::= STRING TITULO ASSIGN expr:v SEMICOLON
-    {: title = v.toString(); :}
+::= STRING TITULO ASSIGN translation_exp:v SEMICOLON
+    {: title = v; :}
     |
-    STRING SQR_BRACKETS EJEX ASSIGN list_definition SEMICOLON
+    STRING SQR_BRACKETS EJEX ASSIGN LBRACKET list_items:arr RBRACKET SEMICOLON
     {:
-        titleArray = array.toArray();
-        array.clear();
+        titleArray = arr.toArray();
     :}
     |
-    DOUBLE SQR_BRACKETS VALORES ASSIGN list_definition SEMICOLON
+    DOUBLE SQR_BRACKETS VALORES ASSIGN LBRACKET list_items:arr RBRACKET SEMICOLON
     {:
-        valueArray = array.toArray();
-        array.clear();
+        valueArray = arr.toArray();
     :};
 
-list_definition
-::= LBRACKET list_items RBRACKET;
-
 list_items
-::= list_items COMMA expr:item
-    {: array.add(item); :}
+::= list_items:list COMMA translation_exp:item
+    {:
+        list.add(item);
+        RESULT = list;
+    :}
     |
-    expr:item
-    {: array.add(item); :};
+    translation_exp:item
+    {:
+        LinkedList list = new LinkedList();
+        list.add(item);
+        RESULT = list;
+    :};
+//---FIN SECCION DE GRAFICAS---
 
 variable_stmt
-::= var_declaration
+::= var_declaration:v
+    {: RESULT = v; :}
     |
     var_assignment;
 
 var_declaration
 ::= type ID:k ASSIGN expr:v
-    {: key = k.toString(); value = v; :}
+    {: RESULT = ""; :}
     |
     type ID:k
-    {: key = k.toString(); value = null; :};
+    {: RESULT = ""; :};
 
 var_assignment
 ::= ID ASSIGN expr;
@@ -258,29 +293,8 @@ expr
     expr_literal:v
     {: RESULT = v; :}
     |
-    ID:key
-    {:
-        try{
-            RESULT = symbol_table.get(key.toString().toLowerCase());
-        }
-        catch(Exception e){
-            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString().toLowerCase()+" no existe");
-        }
-    :}
-    |
-    json_value:v
+    ID:v
     {: RESULT = v; :};
-
-json_value
-::= DOLLAR LBRACKET NEW_VALOR COMMA STRING_LITERAL:file COMMA STRING_LITERAL:key RBRACKET
-    {:
-        try{
-            RESULT = main.ParserState.json_files.get(file.toString().toLowerCase()).get(key.toString().toLowerCase());
-        }
-        catch(Exception e){
-            main.ParserState.output.add("Error en ("+keyleft+", "+keyright+"): "+key.toString().toLowerCase()+" no existe");
-        }
-    :};
 
 binary_expr
 ::= arithmetic_expr:v
@@ -290,35 +304,50 @@ binary_expr
     {: RESULT = v; :}
     |
     expr:e1 AND expr:e2
+    {: RESULT = "" + e1 + "and" + e2; :}
     |
-    expr:e1 OR expr:e2;
+    expr:e1 OR expr:e2
+    {: RESULT = "" + e1 + "or" + e2; :};
 
 unary_expr
 ::= NOT expr:e
+    {: RESULT = "not" + e; :}
     |
-    SUB expr:e %prec MINUS;
+    SUB expr:e 
+    {: RESULT = "-" + e; :}
+    %prec MINUS;
 
 arithmetic_expr
-::= expr:e1 ADD expr:e2
+::= expr:e1 ADD:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 SUB expr:e2
+    expr:e1 SUB:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 TIMES expr:e2
+    expr:e1 TIMES:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 DIV expr:e2;
+    expr:e1 DIV:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :};
 
 relational_expr
-::= expr:e1 GREATER expr:e2
+::= expr:e1 GREATER:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 LESS expr:e2
+    expr:e1 LESS:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 GREATER_EQUAL expr:e2
+    expr:e1 GREATER_EQUAL:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 LESS_EQUAL expr:e2
+    expr:e1 LESS_EQUAL:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 EQUAL expr:e2
+    expr:e1 EQUAL:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :}
     |
-    expr:e1 NOT_EQUAL expr:e2;
+    expr:e1 NOT_EQUAL:op expr:e2
+    {: RESULT = "" + e1 + op + e2; :};
 
 expr_literal
 ::= STRING_LITERAL:v
